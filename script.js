@@ -9,7 +9,7 @@ function fetchPosts() {
     postsDiv.innerHTML = "";
 
     Promise.all([
-        fetch("https://newsdata.io/api/1/latest?apikey=pub_23b5653d62b141b3b9ca9a16be5cd261&q=Weather%20news%20in%20india%20")
+       fetch("https://jsonplaceholder.typicode.com/posts")
   .then(res => res.json())
   .then(data => {
       console.log(data);
@@ -58,4 +58,5 @@ function fetchPosts() {
         loadingText.innerText = "Error loading posts.";
         console.error(error);
     });
+
 }
