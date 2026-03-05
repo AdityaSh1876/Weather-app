@@ -1,63 +1,43 @@
-const loadBtn = document.getElementById("loadBtn");
-const postsDiv = document.getElementById("posts");
-const loadingText = document.getElementById("loading");
+const container = document.getElementById("posts");
 
-loadBtn.addEventListener("click", fetchPosts);
+container.innerHTML = "Loading weather news...";
 
-function fetchPosts() {
-    loadingText.innerText = "Loading posts...";
-    postsDiv.innerHTML = "";
+const apiKey = "df6f72dec09643a89c7c51de099d4454";
 
-    Promise.all([
-       fetch("https://newsapi.org/v2/everything?q=weather&language=en&sortBy=publishedAt&apiKey=YOUR_API_KEY")
-  .then(res => res.json())
-  .then(data => {
-      console.log(data);
+const url = `https://newsapi.org/v2/everything?q=weather&language=en&sortBy=publishedAt&apiKey=${apiKey}`;
 
-      if (data.status === "success") {
-          data.results.slice(0, 10).forEach(article => {
-              const card = document.createElement("div");
-              card.classList.add("card");
-
-              card.innerHTML = `
-                  <h3>${article.title}</h3>
-                  <p>${article.description || "No description available"}</p>
-              `;
-
-              postsDiv.appendChild(card);
-          });
-      } else {
-          loadingText.innerText = "API Error";
-      }
+fetch(url)
+  .then(response => {
+    if (!response.ok) {
+      throw new Error("Network response failed");
+    }
+    return response.json();
   })
-  .catch(error => {
-      console.log(error);
-      loadingText.innerText = "Network Error";
-  });
-    ])
-    .then(responses => Promise.all(responses.map(res => res.json())))
-    .then(([posts, users]) => {
-        loadingText.innerText = "";
+  .then(data => {
 
-        posts.slice(0, 12).forEach(post => {
-            const user = users.find(u => u.id === post.userId);
+    container.innerHTML = "";
 
-            const card = document.createElement("div");
-            card.classList.add("card");
+    data.articles.forEach(article => {
 
-            card.innerHTML = `
-                <h3>${post.title}</h3>
-                <p>${post.body}</p>
-                <small><strong>Author:</strong> ${user.name}</small>
-            `;
+      const card = document.createElement("div");
+      card.classList.add("card");
 
-            postsDiv.appendChild(card);
-        });
-    })
-    .catch(error => {
-        loadingText.innerText = "Error loading posts.";
-        console.error(error);
+      const title = article.title || "No title available";
+      const description = article.description || "No description available";
+      const link = article.url || "#";
+
+      card.innerHTML = `
+        <h3>${title}</h3>
+        <p>${description}</p>
+        <a href="${link}" target="_blank">Read Full News</a>
+      `;
+
+      container.appendChild(card);
+
     });
 
-}
-
+  })
+  .catch(error => {
+    container.innerHTML = "Error loading weather news.";
+    console.error("Fetch error:", error);
+  });
