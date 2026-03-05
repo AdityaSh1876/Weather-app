@@ -9,7 +9,7 @@ function fetchPosts() {
     postsDiv.innerHTML = "";
 
     Promise.all([
-       fetch("https://jsonplaceholder.typicode.com/posts")
+       fetch("https://newsapi.org/v2/everything?q=weather&language=en&sortBy=publishedAt&apiKey=YOUR_API_KEY")
   .then(res => res.json())
   .then(data => {
       console.log(data);
@@ -60,3 +60,4 @@ function fetchPosts() {
     });
 
 }
+
