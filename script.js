@@ -1,27 +1,32 @@
-const button = document.getElementById("loadPosts");
 const container = document.getElementById("posts");
+const loader = document.getElementById("loader");
+const searchBtn = document.getElementById("searchBtn");
+const themeBtn = document.getElementById("themeBtn");
 
-button.addEventListener("click", loadPosts);
+const apiKey = "df6f72dec09643a89c7c51de099d4454";
 
-function loadPosts(){
+searchBtn.addEventListener("click", loadNews);
 
-container.innerHTML="Loading Weather News...";
+function loadNews(){
 
-const apiKey="df6f72dec09643a89c7c51de099d4454";
+const query = document.getElementById("searchInput").value || "weather india";
+
+loader.style.display="block";
+container.innerHTML="";
 
 const url=`https://api.allorigins.win/get?url=${encodeURIComponent(
-`https://newsapi.org/v2/everything?q=weather india&language=en&sortBy=publishedAt&apiKey=${apiKey}`
+`https://newsapi.org/v2/everything?q=${query}&language=en&sortBy=publishedAt&apiKey=${apiKey}`
 )}`;
 
 fetch(url)
 
-.then(response=>response.json())
+.then(res=>res.json())
 
 .then(result=>{
 
-const data=JSON.parse(result.contents);
+loader.style.display="none";
 
-container.innerHTML="";
+const data = JSON.parse(result.contents);
 
 data.articles.slice(0,9).forEach(article=>{
 
@@ -47,11 +52,15 @@ container.appendChild(card);
 })
 
 .catch(error=>{
-
-container.innerHTML="Error loading news";
-
+loader.style.display="none";
+container.innerHTML="Failed to load news";
 console.log(error);
-
 });
 
 }
+
+/* dark mode */
+
+themeBtn.addEventListener("click",()=>{
+document.body.classList.toggle("dark");
+});
