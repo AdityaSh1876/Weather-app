@@ -4,7 +4,7 @@ container.innerHTML = "Loading weather news...";
 
 const apiKey = "df6f72dec09643a89c7c51de099d4454";
 
-const url = `https://newsapi.org/v2/everything?q=weather&language=en&sortBy=publishedAt&apiKey=${df6f72dec09643a89c7c51de099d4454}`;
+const url = `https://newsapi.org/v2/everything?q=weather&language=en&sortBy=publishedAt&apiKey=${apiKey}`;
 
 fetch(url)
   .then(response => {
