@@ -1,15 +1,21 @@
 <!DOCTYPE html>
 <html>
 <head>
-<title>Weather News</title>
+<title>Indian Weather News</title>
 <link rel="stylesheet" href="style.css">
 </head>
 
 <body>
 
-<h1>Weather News</h1>
+<h1>Indian Weather News</h1>
 
-<button id="loadPosts">Load Weather News</button>
+<div class="controls">
+<input type="text" id="searchInput" placeholder="Search weather news...">
+<button id="searchBtn">Search</button>
+<button id="themeBtn">Toggle Dark Mode</button>
+</div>
+
+<div id="loader" class="loader"></div>
 
 <div id="posts" class="news-container"></div>
 
