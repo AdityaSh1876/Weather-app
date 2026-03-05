@@ -33,13 +33,17 @@ data.articles.slice(0,9).forEach(article=>{
 const card=document.createElement("div");
 card.classList.add("card");
 
-card.innerHTML=`
+card.innerHTML = `
 
 <img src="${article.urlToImage || 'https://via.placeholder.com/300'}">
 
 <h3>${article.title}</h3>
 
 <p>${article.description || "No description available"}</p>
+
+<p><strong>Source:</strong> ${article.source.name}</p>
+
+<p><strong>Date:</strong> ${new Date(article.publishedAt).toLocaleDateString()}</p>
 
 <a href="${article.url}" target="_blank">Read Full News</a>
 
@@ -64,3 +68,4 @@ console.log(error);
 themeBtn.addEventListener("click",()=>{
 document.body.classList.toggle("dark");
 });
+
