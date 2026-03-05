@@ -5,12 +5,12 @@ button.addEventListener("click", loadPosts);
 
 function loadPosts() {
 
-  container.innerHTML = "Loading weather news...";
+  container.innerHTML = "Loading Indian weather news...";
 
   const apiKey = "df6f72dec09643a89c7c51de099d4454";
 
   const url = `https://api.allorigins.win/get?url=${encodeURIComponent(
-    `https://newsapi.org/v2/everything?q=weather&language=en&sortBy=publishedAt&apiKey=${apiKey}`
+    `https://newsapi.org/v2/everything?q=weather%20india&language=en&sortBy=publishedAt&apiKey=${apiKey}`
   )}`;
 
   fetch(url)
