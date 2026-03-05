@@ -10,7 +10,7 @@ function loadPosts() {
   const apiKey = "df6f72dec09643a89c7c51de099d4454";
 
   const url = `https://api.allorigins.win/get?url=${encodeURIComponent(
-    `https://newsapi.org/v2/everything?q=weather%20india&language=en&sortBy=publishedAt&apiKey=${apiKey}`
+    `https://newsapi.org/v2/top-headlines?country=in&q=weather&apiKey=${apiKey}`
   )}`;
 
   fetch(url)
