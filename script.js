@@ -1,44 +1,39 @@
+const button = document.getElementById("loadPosts");
 const container = document.getElementById("posts");
 
-container.innerHTML = "Loading weather news...";
+button.addEventListener("click", loadPosts);
 
-const apiKey = "df6f72dec09643a89c7c51de099d4454";
+function loadPosts() {
 
-const url = `https://newsapi.org/v2/everything?q=weather&language=en&sortBy=publishedAt&apiKey=${apiKey}`;
+  container.innerHTML = "Loading weather news...";
 
-fetch(url)
-  .then(response => {
-    if (!response.ok) {
-      throw new Error("Network response failed");
-    }
-    return response.json();
-  })
-  .then(data => {
+  const apiKey = "df6f72dec09643a89c7c51de099d4454";
 
-    container.innerHTML = "";
+  const url = `https://newsapi.org/v2/everything?q=weather&language=en&sortBy=publishedAt&apiKey=${apiKey}`;
 
-    data.articles.forEach(article => {
+  fetch(url)
+    .then(response => response.json())
+    .then(data => {
 
-      const card = document.createElement("div");
-      card.classList.add("card");
+      container.innerHTML = "";
 
-      const title = article.title || "No title available";
-      const description = article.description || "No description available";
-      const link = article.url || "#";
+      data.articles.forEach(article => {
 
-      card.innerHTML = `
-        <h3>${title}</h3>
-        <p>${description}</p>
-        <a href="${link}" target="_blank">Read Full News</a>
-      `;
+        const card = document.createElement("div");
 
-      container.appendChild(card);
+        card.innerHTML = `
+          <h3>${article.title}</h3>
+          <p>${article.description}</p>
+          <a href="${article.url}" target="_blank">Read more</a>
+        `;
 
+        container.appendChild(card);
+      });
+
+    })
+    .catch(error => {
+      container.innerHTML = "Error loading news.";
+      console.log(error);
     });
 
-  })
-  .catch(error => {
-    container.innerHTML = "Error loading weather news.";
-    console.error("Fetch error:", error);
-  });
-
+}
