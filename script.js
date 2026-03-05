@@ -9,7 +9,7 @@ function loadPosts() {
 
   const apiKey = "df6f72dec09643a89c7c51de099d4454";
 
-  const url = `https://newsapi.org/v2/everything?q=weather&language=en&sortBy=publishedAt&apiKey=${apiKey}`;
+  const url = `https://api.allorigins.win/raw?url=https://newsapi.org/v2/everything?q=weather&language=en&sortBy=publishedAt&apiKey=${apiKey}`;
 
   fetch(url)
     .then(response => response.json())
@@ -17,7 +17,7 @@ function loadPosts() {
 
       container.innerHTML = "";
 
-      data.articles.forEach(article => {
+      data.articles.slice(0,10).forEach(article => {
 
         const card = document.createElement("div");
 
@@ -28,6 +28,7 @@ function loadPosts() {
         `;
 
         container.appendChild(card);
+
       });
 
     })
@@ -37,3 +38,4 @@ function loadPosts() {
     });
 
 }
+
