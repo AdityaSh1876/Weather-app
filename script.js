@@ -33,6 +33,8 @@ const weatherCodes = {
     99: { label: "Severe Thunderstorm", icon: "🌩️" },
 };
 
+let weatherData = [];
+
 function getWeatherInfo(code) {
     return weatherCodes[code] || { label: "Unknown", icon: "🌡️" };
 }
@@ -117,9 +119,8 @@ async function loadDefaultCities() {
 
     const results = await Promise.all(defaultCities.map(city => fetchWithRetry(city)));
 
-    results.forEach(data => {
-        if (data) grid.appendChild(createCard(data));
-    });
+    weatherData = results.filter(Boolean);
+    weatherData.forEach(data => grid.appendChild(createCard(data)));
 
     hideLoading();
 }
@@ -142,6 +143,7 @@ document.getElementById("searchBtn").addEventListener("click", async () => {
         if (existing) {
             existing.closest(".weather-card").scrollIntoView({ behavior: "smooth" });
         } else {
+            weatherData.push(data);
             const card = createCard(data);
             card.classList.add("highlight");
             grid.prepend(card);
@@ -160,6 +162,116 @@ document.getElementById("searchBtn").addEventListener("click", async () => {
 
 document.getElementById("cityInput").addEventListener("keydown", (e) => {
     if (e.key === "Enter") document.getElementById("searchBtn").click();
+});
+
+// ─── Chatbot ─────────────────────────────────────────────────────────────────
+
+function isRaining(code) {
+    return [51,53,55,61,63,65,80,81,82,95,96,99].includes(code);
+}
+
+function isCloudy(code) {
+    return [2,3,45,48].includes(code);
+}
+
+function getChatbotReply(msg) {
+    if (weatherData.length === 0) {
+        return "Weather data is still loading. Please wait a moment and try again!";
+    }
+
+    const q = msg.toLowerCase();
+
+    // Hottest city
+    if (q.includes("hot") || q.includes("highest temp") || q.includes("warmest")) {
+        const city = weatherData.reduce((a, b) => a.temperature_2m > b.temperature_2m ? a : b);
+        return `🔥 ${city.city} is the hottest right now at ${Math.round(city.temperature_2m)}°C!`;
+    }
+
+    // Coldest city
+    if (q.includes("cold") || q.includes("lowest temp") || q.includes("coolest")) {
+        const city = weatherData.reduce((a, b) => a.temperature_2m < b.temperature_2m ? a : b);
+        return `❄️ ${city.city} is the coolest right now at ${Math.round(city.temperature_2m)}°C.`;
+    }
+
+    // Rain anywhere?
+    if (q.includes("rain") || q.includes("raining") || q.includes("baarish")) {
+        const rainy = weatherData.filter(d => isRaining(d.weather_code));
+        if (rainy.length === 0) return "☀️ No rain anywhere right now! Skies are mostly clear.";
+        return `🌧️ It's raining in: ${rainy.map(d => d.city).join(", ")}.`;
+    }
+
+    // Humidity
+    if (q.includes("humid")) {
+        const city = weatherData.reduce((a, b) => a.relative_humidity_2m > b.relative_humidity_2m ? a : b);
+        return `💧 ${city.city} has the highest humidity at ${city.relative_humidity_2m}%.`;
+    }
+
+    // Wind
+    if (q.includes("wind") || q.includes("windy")) {
+        const city = weatherData.reduce((a, b) => a.wind_speed_10m > b.wind_speed_10m ? a : b);
+        return `💨 ${city.city} is the windiest at ${Math.round(city.wind_speed_10m)} km/h.`;
+    }
+
+    // Best weather
+    if (q.includes("best") || q.includes("nice") || q.includes("pleasant") || q.includes("good weather")) {
+        const best = weatherData.reduce((a, b) => {
+            const scoreA = (a.weather_code <= 2 ? 2 : 0) - Math.abs(a.temperature_2m - 26) / 10;
+            const scoreB = (b.weather_code <= 2 ? 2 : 0) - Math.abs(b.temperature_2m - 26) / 10;
+            return scoreA > scoreB ? a : b;
+        });
+        return `😊 ${best.city} has the most pleasant weather right now — ${Math.round(best.temperature_2m)}°C and ${getWeatherInfo(best.weather_code).label}.`;
+    }
+
+    // Summary / all cities
+    if (q.includes("all") || q.includes("summary") || q.includes("list") || q.includes("cities")) {
+        return weatherData.map(d => `${d.city}: ${Math.round(d.temperature_2m)}°C, ${getWeatherInfo(d.weather_code).label}`).join("\n");
+    }
+
+    // Specific city lookup
+    const found = weatherData.find(d => q.includes(d.city.toLowerCase()));
+    if (found) {
+        const info = getWeatherInfo(found.weather_code);
+        return `${info.icon} ${found.city}:\n🌡 ${Math.round(found.temperature_2m)}°C (feels like ${Math.round(found.apparent_temperature)}°C)\n☁️ ${info.label}\n💧 Humidity: ${found.relative_humidity_2m}%\n💨 Wind: ${Math.round(found.wind_speed_10m)} km/h`;
+    }
+
+    // Help
+    if (q.includes("help") || q.includes("what can") || q.includes("?")) {
+        return `I can answer questions like:\n• Which city is hottest/coldest?\n• Is it raining anywhere?\n• Weather in Mumbai?\n• Which city is windiest?\n• Which city has best weather?\n• Show all cities`;
+    }
+
+    return `Hmm, I didn't get that. Try asking:\n"Which city is hottest?"\n"Is it raining?"\n"Weather in Delhi?"`;
+}
+
+function addMessage(text, sender) {
+    const messages = document.getElementById("chatMessages");
+    const div = document.createElement("div");
+    div.className = sender === "user" ? "user-msg" : "bot-msg";
+    div.style.whiteSpace = "pre-wrap";
+    div.textContent = text;
+    messages.appendChild(div);
+    messages.scrollTop = messages.scrollHeight;
+}
+
+document.getElementById("chatToggle").addEventListener("click", () => {
+    document.getElementById("chatWindow").classList.toggle("hidden");
+    document.getElementById("chatInput").focus();
+});
+
+document.getElementById("closeChat").addEventListener("click", () => {
+    document.getElementById("chatWindow").classList.add("hidden");
+});
+
+document.getElementById("chatSend").addEventListener("click", () => {
+    const input = document.getElementById("chatInput");
+    const msg = input.value.trim();
+    if (!msg) return;
+    addMessage(msg, "user");
+    input.value = "";
+    setTimeout(() => addMessage(getChatbotReply(msg), "bot"), 400);
+});
+
+document.getElementById("chatInput").addEventListener("keydown", (e) => {
+    if (e.key === "Enter") document.getElementById("chatSend").click();
 });
 
 loadDefaultCities();
