@@ -1,26 +1,23 @@
-<!DOCTYPE html>
-<html>
-<head>
-<title>News</title>
-<link rel="stylesheet" href="style.css">
-</head>
+<!doctype html>
+<html lang="en">
+    <head>
+        <meta charset="UTF-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <title>Weather Report</title>
+        <link rel="stylesheet" href="style.css" />
+    </head>
+    <body>
+        <h1>🌤 Weather Report</h1>
+        <p class="subtitle">Live weather for major Indian cities</p>
 
-<body>
+        <div class="search-bar">
+            <input type="text" id="cityInput" placeholder="Search a city..." />
+            <button id="searchBtn">Search</button>
+        </div>
 
-<h1>News</h1>
+        <div id="loading" class="loading-text"></div>
+        <div id="weatherGrid" class="weather-grid"></div>
 
-<div class="controls">
-<input type="text" id="searchInput" placeholder="Search weather news...">
-<button id="searchBtn">Search</button>
-<button id="themeBtn">Toggle Dark Mode</button>
-</div>
-
-<div id="loader" class="loader"></div>
-
-<div id="posts" class="news-container"></div>
-
-<script src="script.js"></script>
-
-</body>
+        <script src="script.js"></script>
+    </body>
 </html>
-
