@@ -18,6 +18,24 @@
         <div id="loading" class="loading-text"></div>
         <div id="weatherGrid" class="weather-grid"></div>
 
+        <!-- Chatbot -->
+        <div id="chatbot">
+            <div id="chatWindow" class="chat-window hidden">
+                <div class="chat-header">
+                    <span>🤖 Weather Bot</span>
+                    <button id="closeChat">✕</button>
+                </div>
+                <div id="chatMessages" class="chat-messages">
+                    <div class="bot-msg">Hi! Ask me anything about the weather. Try: <em>"Which city is hottest?"</em> or <em>"Is it raining anywhere?"</em></div>
+                </div>
+                <div class="chat-input-row">
+                    <input type="text" id="chatInput" placeholder="Ask about weather..." />
+                    <button id="chatSend">Send</button>
+                </div>
+            </div>
+            <button id="chatToggle">💬</button>
+        </div>
+
         <script src="script.js"></script>
     </body>
 </html>
